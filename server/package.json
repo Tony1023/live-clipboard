@@ -1,0 +1,13 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "app.js",
+  "author": "Tony Lu",
+  "license": "MIT",
+  "dependencies": {
+    "websocket": "^1.0.30"
+  },
+  "scripts": {
+    "start": "nodemon ./app.js"
+  }
+}

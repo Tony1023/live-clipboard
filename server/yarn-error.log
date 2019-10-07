@@ -1,0 +1,36 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn init
+
+PATH: 
+  /yarn/bin:/anaconda3/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/usr/local/CrossPack-AVR/bin:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin:/Users/TonyLyu/bin:/Users/TonyLyu/apache-ant-1.9.14/bin
+
+Yarn version: 
+  1.15.2
+
+Node version: 
+  11.14.0
+
+Platform: 
+  darwin x64
+
+Trace: 
+  Error: canceled
+      at Interface.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:125801:13)
+      at Interface.emit (events.js:193:13)
+      at Interface._ttyWrite (readline.js:826:16)
+      at ReadStream.onkeypress (readline.js:183:10)
+      at ReadStream.emit (events.js:193:13)
+      at emitKeys (internal/readline.js:424:14)
+      at emitKeys.next (<anonymous>)
+      at ReadStream.onData (readline.js:1097:36)
+      at ReadStream.emit (events.js:193:13)
+      at addChunk (_stream_readable.js:295:12)
+
+npm manifest: 
+  No manifest
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
