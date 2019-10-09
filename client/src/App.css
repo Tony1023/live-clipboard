@@ -1,22 +1,24 @@
-.App {
+#sharecodeform {
+  display: block;
   text-align: center;
+  height: 25px;
 }
 
-.App-logo {
-  height: 40vmin;
+.column {
+  float: left;
+  border: 1px solid black;
+  width: calc(50% - 12px);
+  height: calc(100vh - 37px);
+  margin: 5px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+#textsubmitform {
+  display: block;
+  height: 25px;
 }
 
-.App-link {
-  color: #09d3ac;
+#textbox textarea {
+  width: calc(100% - 8px);
+  height: calc(100% - 33px);
+  font-family: monospace;
 }

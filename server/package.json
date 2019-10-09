@@ -5,6 +5,7 @@
   "author": "Tony Lu",
   "license": "MIT",
   "dependencies": {
+    "hashmap": "^2.4.0",
     "websocket": "^1.0.30"
   },
   "scripts": {

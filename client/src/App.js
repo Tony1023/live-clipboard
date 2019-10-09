@@ -16,6 +16,8 @@ class App extends React.Component {
     switch (res.type) {
       case 'shareCode':
         this.setState({ shareCode: res.payload.code });
+        const input = document.getElementById('sharecode');
+        input.value = res.payload.code;
         break;
       case 'message':
         let messages = [...this.state.messages];
@@ -30,66 +32,84 @@ class App extends React.Component {
 
   sharecodeHandler = event => {
     event.preventDefault();
-    
+    if (this.state.shareCode === '') { return; }
+    this.ws.sendMessage(JSON.stringify({
+      type: 'shareCode',
+      payload: {
+        code: this.state.shareCode
+      }
+    }));
   }
 
   textboxHandler = event => {
-    event.preventDefault()
+    event.preventDefault();
+    if (this.state.textbox === '') { return; }
     this.ws.sendMessage(JSON.stringify({
       type: 'message',
       payload: {
-        message: this.state.textbox,
-        shareCode: this.state.shareCode
+        message: this.state.textbox
       }
-    }))
+    }));
+  }
+
+  clipboardHandler = () => {
+    navigator.clipboard.readText().then(text => {
+      if (text === '') { return; }
+      this.ws.sendMessage(JSON.stringify({
+        type: 'message',
+        payload: {
+          message: text
+        }
+      }));
+    });
   }
 
   render() {
-    return (
-      <div className='App'>
-        <WebSocket
-          url='ws://localhost:9527'
-          onMessage={this.dataHandler.bind(this)}
-          ref={WebSocket => { this.ws = WebSocket }}
+    return <div className='App'>
+      <WebSocket
+        url='ws://localhost:9527'
+        onMessage={this.dataHandler.bind(this)}
+        ref={WebSocket => { this.ws = WebSocket }}
+      />
+      <form id='sharecodeform' name='sharecodeForm' onSubmit={this.sharecodeHandler}>
+        <input 
+          id='sharecode'
+          name='sharecode'
+          type='text'
+          onChange={event => {
+            console.log(event.target.value);
+            this.setState({ shareCode: event.target.value });
+          }}
         />
-        <form name='sharecodeForm' onSubmit={this.sharecodeHandler}>
-          <input 
-            name='sharecode'
-            type='text'
-            value={this.state.shareCode}
-            onChange={event => {
-              this.setState({ [event.target.name]: event.target.value });
-            }}
+        <input type='submit'/>
+      </form>
+
+      <div id='messages' className='column'>
+        {this.state.messages.map((msg, index) => 
+          <Message 
+            key={index} 
+            message={msg.message}
+            time={msg.time}
           />
-          <input type='submit'/>
+        )}
+      </div>
+
+      <section id='textbox' className='column'>
+        <form id='textsubmitform' name='textbox' onSubmit={this.textboxHandler}>
+          <input value='share' type='submit'/>
+          <button onClick={this.clipboardHandler.bind(this)}>share clipboard</button>
         </form>
 
-        <div id='messages'>
-          {this.state.messages.map((msg, index) => 
-            <Message 
-              key={index} 
-              message={msg.message}
-              time={msg.time}
-            />
-          )}
-        </div>
-
-        <section id='textbox'>
-          <textarea
-            value={this.state.textbox}
-            onChange={event => {
-              this.setState({ textbox: event.target.value });
-            }}
-          >
-
-          </textarea>
-          <form name='textbox' onSubmit={this.textboxHandler}>
-            <input type='submit'/>
-          </form>
-        </section>
-
-      </div>
-    );
+        <textarea
+          value={this.state.textbox}
+          onChange={event => {
+            this.setState({ textbox: event.target.value });
+          }}
+          id='shareText'
+        ></textarea>
+      </section>
+      
+    </div>;
   }
 }
 

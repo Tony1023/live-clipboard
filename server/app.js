@@ -1,8 +1,10 @@
 const WebSocketServer = require('websocket').server;
 const http = require('http');
+const Map = require('hashmap');
 
 // A dictionary of connections - { sharecode: list of connections in the same room }
 var connections = {};
+var shareCodes = new Map();
 
 const server = http.createServer((req, res) => {});
 server.listen(9527, () => { console.log('Listening on port 9527'); });
@@ -13,12 +15,34 @@ ws = new WebSocketServer({
 });
 
 const originAllowed = origin => {
-  console.log(origin);
   return true;
 };
 
+const numberToString = number => {
+  code = '';
+  for (let i = 0; i < 4; ++i) {
+    const component = number % 36;
+    if (component < 10) {
+      code += String(component);
+    } else {
+      code += String.fromCharCode(component + 55);
+    }
+    number = Math.floor(number /= 36);
+  }
+  return code;
+}
+
 const getSpareRoom = () => {
-  return 'jcv9';
+  let number = Math.floor(Math.random() * 1679616);
+  let code = numberToString(number);
+  while(connections[code] !== undefined) {
+    ++number;
+    if (number >= 1679616) {
+      number = 0;
+    }
+    code = numberToString(number);
+  } 
+  return code;
 };
 
 const ShareCode = code => {
@@ -40,9 +64,8 @@ const Message = (message, time) => {
   });
 };
 
-const broadcast = (code, message) => {
-  console.log(code);
-  console.log(connections);
+const broadcast = (connection, message) => {
+  let code = shareCodes.get(connection);
   let room = connections[code];
   if (room === undefined) {
     console.log('Invalid code');
@@ -51,15 +74,33 @@ const broadcast = (code, message) => {
   let currentTime = Date();
   let copyRoom = [...room];
   copyRoom.forEach(connection => {
-    if (connection.state === 'closed') {
-      let index = room.indexOf(connection);
-      if (index > -1) {
-        room.splice(index, 1);
-      }
-    } else {
-      connection.sendUTF(Message(message, currentTime));
-    }
+    connection.sendUTF(Message(message, currentTime));
   });
+}
+
+const joinWithCode = (connection, code) => {
+  const room = connections[code];
+  console.log(room);
+  console.log(code);
+  if (room !== undefined) {
+    room.push(connection);
+  } else {
+    connections[code] = [connection];
+  }
+  shareCodes.set(connection, code);
+}
+
+const leave = connection => {
+  const code = shareCodes.get(connection);
+  const room = connections[code];
+  const index = room.indexOf(connection);
+  if (index > -1) {
+    room.splice(index, 1);
+  }
+  if (room.length === 0) {
+    delete connections[code];
+    shareCodes.remove(connection);
+  }
 }
 
 // WebSocket server
@@ -72,25 +113,21 @@ ws.on('request', function(request) {
   let connection = request.accept(null, request.origin);
 
   let code = getSpareRoom();
-  let room = connections[code];
-  if (room !== undefined) {
-    room.push(connection);
-  } else {
-    connections[code] = [connection];
-  }
-
+  joinWithCode(connection, code);
   connection.sendUTF(ShareCode(code));
 
   // This is the most important callback for us, we'll handle
   // all messages from users here.
-  connection.on('message', function(data) {
+  connection.on('message', data => {
     if (data.type === 'utf8') {
       let message = JSON.parse(data.utf8Data);
       switch (message.type) {
         case 'message':
-          broadcast(message.payload.shareCode, message.payload.message)
+          broadcast(connection, message.payload.message)
           break;
         case 'shareCode':
+          leave(connection);
+          joinWithCode(connection, message.payload.code);
           break;
         default:
           console.log('Got unexpected message: ', message);
@@ -99,7 +136,8 @@ ws.on('request', function(request) {
     }
   });
 
-  connection.on('close', connection => {
-    
+  connection.on('close', () => {
+    console.log('Connection closed from ' + request.origin);
+    leave(connection);
   });
 });

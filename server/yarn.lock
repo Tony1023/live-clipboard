@@ -9,6 +9,11 @@ debug@^2.2.0:
   dependencies:
     ms "2.0.0"
 
+hashmap@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/hashmap/-/hashmap-2.4.0.tgz#4bcfe01fbbd2713db9d9254ce936b838412af884"
+  integrity sha512-Ngj48lhnxJdnBAEVbubKBJuN1elfVLZJs94ZixRi98X3GCU4v6pgj9qRkHt6H8WaVJ69Wv0r1GhtS7hvF9zCgg==
+
 is-typedarray@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/is-typedarray/-/is-typedarray-1.0.0.tgz#e479c80858df0c1b11ddda6940f96011fcda4a9a"

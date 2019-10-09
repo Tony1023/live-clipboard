@@ -1,0 +1,11 @@
+.message-box {
+  padding: 5px;
+}
+
+.message-time {
+  font-size: 10px;
+}
+
+.message-body {
+  font-family: monospace;
+}
