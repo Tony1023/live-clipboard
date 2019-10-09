@@ -67,7 +67,7 @@ class App extends React.Component {
   render() {
     return <div className='App'>
       <WebSocket
-        url='ws://localhost:9527'
+        url='ws://zhehao-lu.me/live-clipboard-ws/'
         onMessage={this.dataHandler.bind(this)}
         ref={WebSocket => { this.ws = WebSocket }}
       />
