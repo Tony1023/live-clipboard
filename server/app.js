@@ -15,7 +15,7 @@ ws = new WebSocketServer({
 });
 
 const originAllowed = origin => {
-  return true;
+  return (origin === 'https://zhehao-lu.me' || origin === 'https://www.zhehao-lu.me');
 };
 
 const numberToString = number => {
@@ -80,8 +80,6 @@ const broadcast = (connection, message) => {
 
 const joinWithCode = (connection, code) => {
   const room = connections[code];
-  console.log(room);
-  console.log(code);
   if (room !== undefined) {
     room.push(connection);
   } else {
